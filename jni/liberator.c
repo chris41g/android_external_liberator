@@ -26,7 +26,7 @@
 #include <cutils/logd.h>
 #include <android/log.h>
 
-#define CONFIG_ROOT "/system/etc/senator/"
+#define CONFIG_ROOT "/system/etc/liberator/"
 
 #define SYS_SCHED "/sys/class/block/mmcblk0/queue/scheduler"
 #define SYS_CGOV_C0 "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
@@ -42,7 +42,7 @@
 #define SYS_CHARGE "/sys/class/power_supply/battery/status"
 #define SYS_BATT "/sys/class/power_supply/battery/capacity"
 
-#define APPNAME "Senator"
+#define APPNAME "Liberator"
 
 typedef struct s_ocConfig
 {
