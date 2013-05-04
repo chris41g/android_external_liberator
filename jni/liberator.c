@@ -238,14 +238,14 @@ int set_cpu1_online(int online)
 
 int main (int argc, char **argv)
 {
-    ocConfig *conf;
+    ocConfig  conf;
     pid_t pid, sid;
     char awake_buffer[9];
     char charge_buffer[15];
     char cfgs[45];
     char  batt_buffer[4];
     char input_buffer[0];
-    char current_prof[9];
+    char current_prof;
     FILE *fp1;
 
     __android_log_write(ANDROID_LOG_INFO, APPNAME, "Starting 4Ace daemon.");
@@ -288,30 +288,32 @@ int main (int argc, char **argv)
         	return 1;
         }
 
-        if (strncmp(awake_buffer, "on", 2) == 0)
+        if (strcmp(awake_buffer, "on") == 0)
         {
 
-        int lowblvl = conf->lowb_level;
+        int lowblvl = conf.lowb_level;
 	int battlvl = batt_buffer;
 
-		if (strncmp(charge_buffer, "Discharging", 11) == 0 && battlvl < lowblvl)
+		if (strcmp(charge_buffer, "Discharging") == 0 && battlvl < lowblvl)
 		{
 			__android_log_write(ANDROID_LOG_INFO, APPNAME, "Setting Low Battery profile.");
 
 			if (0 !=set_cpu1_online(1))
 				__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Low Battery profile for cpu1.");
 
-				set_cpu_params(conf->lowb_governor, conf->lowb_scheduler, conf->lowb_min_freq, conf->lowb_max_freq);
+				set_cpu_params(conf.lowb_governor, conf.lowb_scheduler, conf.lowb_min_freq, conf.lowb_max_freq);
+				current_prof = "lowbat";
 		}
 
-		else if (strncmp(charge_buffer, "Charging", 8) == 0)
+		else if (strcmp(charge_buffer, "Charging") == 0)
 		{
 			__android_log_write(ANDROID_LOG_INFO, APPNAME, "Setting Charging profile.");
 
 			if (0 !=set_cpu1_online(1))
 				__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Charging profile for cpu1.");
 
-				set_cpu_params(conf->charge_governor, conf->charge_scheduler, conf->charge_min_freq, conf->charge_max_freq);
+				set_cpu_params(conf.charge_governor, conf.charge_scheduler, conf.charge_min_freq, conf.charge_max_freq);
+				current_prof = "charging";
 		}
 		else
 		{
@@ -319,7 +321,8 @@ int main (int argc, char **argv)
 
         	    if (0 !=set_cpu1_online(1))
         	        __android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Normal profile for cpu1.");
-        	    set_cpu_params(conf->default_governor, conf->default_scheduler, conf->default_min_freq, conf->default_max_freq);
+        	    set_cpu_params(conf.default_governor, conf.default_scheduler, conf.default_min_freq, conf.default_max_freq);
+		    current_prof = "normal";
 		}
         }
 	else
@@ -327,7 +330,8 @@ int main (int argc, char **argv)
 	    __android_log_write(ANDROID_LOG_INFO, APPNAME, "Setting sleep profile.");
 
             set_cpu1_online(0);
-            set_cpu_params(conf->soff_governor, conf->soff_scheduler, conf->soff_min_freq, conf->soff_max_freq);        
+            set_cpu_params(conf.soff_governor, conf.soff_scheduler, conf.soff_min_freq, conf.soff_max_freq);
+	    current_prof = "sleep";
 	}
 	
 	awake_buffer[0] = '\0';
