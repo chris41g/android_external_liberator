@@ -79,8 +79,6 @@ typedef struct s_ocConfig
 
 } ocConfig;
 
-    bool debug = false;
-
 void my_trim(char *str)
 {
     int i;
@@ -110,19 +108,16 @@ int read_from_file(char *path, int len, char *result)
     fd = fopen(path, "r");
     if (fd == NULL)
     {
-	if (debug == true)
-		__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Oopsie!");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Oopsie!");
         return -1;
     }
     if (fgets(result, len, fd) == NULL)
     {
-	if (debug == true)
-		__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Oopsie 2!");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Oopsie 2!");
         res = -1;
     }
     fclose(fd);
-	if (debug == true)
-    		__android_log_print(ANDROID_LOG_INFO, APPNAME, "result=%s, len=%i", result, len);
+//    __android_log_print(ANDROID_LOG_INFO, APPNAME, "result=%s, len=%i", result, len);
     return res;
 }
 
@@ -148,8 +143,8 @@ int set_cpu_params(char *governor, char *scheduler, char *min_freq, char *max_fr
     write_to_file(SYS_CGOV_C3, governor);
     write_to_file(SYS_CMAX_C3, max_freq);
     write_to_file(SYS_CMIN_C3, min_freq);
-    if (debug == true)
-    	__android_log_print(ANDROID_LOG_INFO, APPNAME, "Setting Params: Governor=%s scheduler=%s min_freq=%s max_freq=%s", governor, scheduler, min_freq, max_freq);
+
+//    __android_log_print(ANDROID_LOG_INFO, APPNAME, "Setting Params: Governor=%s scheduler=%s min_freq=%s max_freq=%s", governor, scheduler, min_freq, max_freq);
     return 0;
 }
 
@@ -159,8 +154,7 @@ int get_config_value(char *config_key, char *reference)
 
     strcpy(config_path, CONFIG_ROOT);
     strcat(config_path, config_key);
-    if (debug == true)
-    	__android_log_print(ANDROID_LOG_INFO, APPNAME, "config_path=%s", config_path);
+//    __android_log_print(ANDROID_LOG_INFO, APPNAME, "config_path=%s", config_path);
     return read_from_file(config_path, 30, reference);
 }
 
@@ -170,32 +164,27 @@ char config_path[60];
 
     if (conf == NULL)
     {
-	if (debug == true)
-		__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Meltdown!");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Meltdown!");
         return -1;
     }
     if (get_config_value("default_min_freq", conf->default_min_freq) == -1)
     {
-	if (debug == true)
-		__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile min_freq == %s", conf->default_min_freq);
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile min_freq == %s", conf->default_min_freq);
         return -1;
     }
     if (get_config_value("default_max_freq", conf->default_max_freq) == -1)
     {
-	if (debug == true)
-		__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile max_freq");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile max_freq");
         return -1;
     }
     if (get_config_value("default_governor", conf->default_governor) == -1)
     {
-	if (debug == true)
-		__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile governor");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile governor");
         return -1;
     }
     if (get_config_value("default_scheduler", conf->default_scheduler) == -1)
     {
-	if (debug == true)
-		__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile scheduler");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile scheduler");
         return -1;
     }
     if (get_config_value("soff_min_freq", conf->soff_min_freq) == -1)
@@ -335,23 +324,7 @@ int main (int argc, char **argv)
     char charge_buffer[12];
     char batt_buffer[4];
     char const * curr_prof = "Normal"; 
-    debug = false;
 
-    if (argc > 0)
-    {
-	if (strcmp(argv[1],"-d") == 0)
-	{
-		debug = true;
-	}
-	else
-    	{
-    		debug = false;
-    	}
-    }
-    else
-    {
-    	debug = false;
-    }
     __android_log_write(ANDROID_LOG_INFO, APPNAME, "Starting kernel Liberator daemon.");
 
     if (load_config(&conf) == -1)
