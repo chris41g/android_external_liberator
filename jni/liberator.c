@@ -120,17 +120,7 @@ int set_cpu_params(char *governor, char *scheduler, char *min_freq, char *max_fr
     write_to_file(SYS_CMAX_C1, max_freq);
     write_to_file(SYS_CMIN_C1, min_freq);
 
-    char buf[255];
-    buf[0] = 0;
-    strcat(buf, "Setting Params: Governor=");
-    strcat(buf, governor);
-    strcat(buf, " scheduler=");
-    strcat(buf, scheduler);
-    strcat(buf, " min_freq=");
-    strcat(buf, min_freq);
-    strcat(buf, " max_freq=");
-    strcat(buf, max_freq);
-    __android_log_write(ANDROID_LOG_INFO, APPNAME, buf);
+    __android_log_print(ANDROID_LOG_INFO, APPNAME, "Setting Params: Governor=%s scheduler=%s min_freq=%s max_freq=%s", governor, scheduler, min_freq, max_freq);
     return 0;
 }
 
@@ -285,15 +275,7 @@ int main (int argc, char **argv)
         	__android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.");
         	return 1;
         }
-		char buf[255];
-		buf[0] = 0;
-		strcat(buf, "awake_buffer=");
-		strcat(buf, awake_buffer);
-		strcat(buf, " charge_buffer=");
-		strcat(buf, charge_buffer);
-		strcat(buf, " batt_buffer=");
-		strcat(buf, batt_buffer);
-		__android_log_write(ANDROID_LOG_INFO, APPNAME, buf);
+	__android_log_print(ANDROID_LOG_INFO, APPNAME, "awake_buffer==%s charge_buffer=%s  batt_buffer=%s", awake_buffer, charge_buffer, batt_buffer);
         if (strncmp(awake_buffer, "on",3) == 0)
         {
 
