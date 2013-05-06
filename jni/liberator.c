@@ -38,6 +38,16 @@
 #define SYS_CMAX_C1 "/sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq"
 #define SYS_CMIN_C1 "/sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq"
 
+#define SYS_ONLI_C2 "/sys/devices/system/cpu/cpu2/online"
+#define SYS_CGOV_C2 "/sys/devices/system/cpu/cpu2/cpufreq/scaling_governor"
+#define SYS_CMAX_C2 "/sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq"
+#define SYS_CMIN_C2 "/sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq"
+
+#define SYS_ONLI_C3 "/sys/devices/system/cpu/cpu3/online"
+#define SYS_CGOV_C3 "/sys/devices/system/cpu/cpu3/cpufreq/scaling_governor"
+#define SYS_CMAX_C3 "/sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq"
+#define SYS_CMIN_C3 "/sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq"
+
 #define SYS_WAKE "/sys/power/wait_for_fb_status"
 #define SYS_CHARGE "/sys/class/power_supply/battery/status"
 #define SYS_BATT "/sys/class/power_supply/battery/capacity"
@@ -124,9 +134,16 @@ int set_cpu_params(char *governor, char *scheduler, char *min_freq, char *max_fr
         return -1;
 
     write_to_file(SYS_CGOV_C1, governor);
-    write_to_file(SYS_SCHED, scheduler);
     write_to_file(SYS_CMAX_C1, max_freq);
     write_to_file(SYS_CMIN_C1, min_freq);
+
+    write_to_file(SYS_CGOV_C2, governor);
+    write_to_file(SYS_CMAX_C2, max_freq);
+    write_to_file(SYS_CMIN_C2, min_freq);
+
+    write_to_file(SYS_CGOV_C3, governor);
+    write_to_file(SYS_CMAX_C3, max_freq);
+    write_to_file(SYS_CMIN_C3, min_freq);
 
 //    __android_log_print(ANDROID_LOG_INFO, APPNAME, "Setting Params: Governor=%s scheduler=%s min_freq=%s max_freq=%s", governor, scheduler, min_freq, max_freq);
     return 0;
@@ -216,6 +233,37 @@ int wait_for_cpu1_online()
     return 0;
 }
 
+int wait_for_cpu2_online()
+{
+    struct stat file_info;
+
+    int i=0;
+    while (0 != stat(SYS_CMAX_C2, &file_info) && i < 20)
+    {
+        usleep(50000);
+        i++;
+    }
+    if (i == 20)
+        return 1;
+
+    return 0;
+}
+
+int wait_for_cpu3_online()
+{
+    struct stat file_info;
+
+    int i=0;
+    while (0 != stat(SYS_CMAX_C3, &file_info) && i < 20)
+    {
+        usleep(50000);
+        i++;
+    }
+    if (i == 20)
+        return 1;
+
+    return 0;
+}
 int set_cpu1_online(int online)
 {
     if (online)
@@ -234,6 +282,41 @@ int set_cpu1_online(int online)
     }
 }
 
+int set_cpu2_online(int online)
+{
+    if (online)
+    {
+        write_to_file(SYS_ONLI_C2, "1");
+
+        if (0 != wait_for_cpu2_online())
+            return 1;
+        else
+            return 0;
+    }
+    else
+    {
+        write_to_file(SYS_ONLI_C2, "0");
+        return 0;
+    }
+}
+
+int set_cpu3_online(int online)
+{
+    if (online)
+    {
+        write_to_file(SYS_ONLI_C3, "1");
+
+        if (0 != wait_for_cpu3_online())
+            return 1;
+        else
+            return 0;
+    }
+    else
+    {
+        write_to_file(SYS_ONLI_C3, "0");
+        return 0;
+    }
+}
 int main (int argc, char **argv)
 {
     ocConfig  conf;
@@ -304,6 +387,10 @@ int main (int argc, char **argv)
 
 				if (0 !=set_cpu1_online(1))
 					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Charging profile for cpu1.");
+				if (0 !=set_cpu2_online(1))
+					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Charging profile for cpu2.");
+				if (0 !=set_cpu3_online(1))
+					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Charging profile for cpu3.");
 
 				set_cpu_params(conf.charge_governor, conf.charge_scheduler, conf.charge_min_freq, conf.charge_max_freq);
 //				write_to_file(SYS_PROF, "Charging");
@@ -318,6 +405,10 @@ int main (int argc, char **argv)
 
 				if (0 !=set_cpu1_online(1))
 					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Low Battery profile for cpu1.");
+				if (0 !=set_cpu2_online(1))
+					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Low Battery profile for cpu2.");
+				if (0 !=set_cpu3_online(1))
+					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Low Battery profile for cpu3.");
 
 				set_cpu_params(conf.lowb_governor, conf.lowb_scheduler, conf.lowb_min_freq, conf.lowb_max_freq);
 //				write_to_file(SYS_PROF, "LowBatt");
@@ -329,8 +420,12 @@ int main (int argc, char **argv)
 				{		
 					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Setting Normal profile.");
 
-					if (0 !=set_cpu1_online(1))
-						__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Normal profile for cpu1.");
+				if (0 !=set_cpu1_online(1))
+					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Normal profile for cpu1.");
+				if (0 !=set_cpu2_online(1))
+					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Normal profile for cpu2.");
+				if (0 !=set_cpu3_online(1))
+					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Normal profile for cpu3.");
 
 					set_cpu_params(conf.default_governor, conf.default_scheduler, conf.default_min_freq, conf.default_max_freq);
 //					write_to_file(SYS_PROF, "Normal");
@@ -347,6 +442,9 @@ int main (int argc, char **argv)
 			__android_log_write(ANDROID_LOG_INFO, APPNAME, "Setting sleep profile.");
 
 			set_cpu1_online(0);
+			set_cpu2_online(0);
+			set_cpu3_online(0);
+
 	        	set_cpu_params(conf.soff_governor, conf.soff_scheduler, conf.soff_min_freq, conf.soff_max_freq);
 //			write_to_file(SYS_PROF, "Sleep");
 			curr_prof = "Sleep";		
