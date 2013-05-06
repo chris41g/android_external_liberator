@@ -136,17 +136,23 @@ int get_config_value(char *config_key, char *reference)
 
 int  load_config(ocConfig *conf)
 {
-FILE *fp;
 char config_path[60];
 char lowbunf[30];
 
+    if (conf == NULL)
+	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Meltdown!");
+        return -1;
     if (get_config_value("default_min_freq", conf->default_min_freq) == -1)
+	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile min_freq");
         return -1;
     if (get_config_value("default_max_freq", conf->default_max_freq) == -1)
+	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile max_freq");
         return -1;
     if (get_config_value("default_governor", conf->default_governor) == -1)
+	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile governor");
         return -1;
     if (get_config_value("default_scheduler", conf->default_scheduler) == -1)
+	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile scheduler");
         return -1;
 
     if (get_config_value("soff_min_freq", conf->soff_min_freq) == -1)
