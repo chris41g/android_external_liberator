@@ -49,6 +49,7 @@
 #define SYS_CMIN_C3 "/sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq"
 
 #define SYS_WAKE "/sys/power/wait_for_fb_wake"
+#define SYS_SLEEP "/sys/power/wait_for_fb_sleep"
 #define SYS_CHARGE "/sys/class/power_supply/battery/status"
 #define SYS_BATT "/sys/class/power_supply/battery/capacity"
 
@@ -320,7 +321,7 @@ int main (int argc, char **argv)
 {
     ocConfig  conf;
     pid_t pid, sid;
-    char awake_buffer[6];
+    char awake_buffer[9];
     char charge_buffer[12];
     char batt_buffer[4];
     char const * curr_prof = "Normal"; 
@@ -425,7 +426,13 @@ int main (int argc, char **argv)
 
 		}
         }
-	else
+        if (read_from_file(SYS_SLEEP, 9, awake_buffer) == -1)
+        {
+        	__android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.1");
+        	return 1;
+        }
+	
+	if (strcmp(awake_buffer, "sleeping") == 0) 	
 	{	
 		if  (strncmp(curr_prof, "Sleep",5) != 0)
 		{
