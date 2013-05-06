@@ -23,3 +23,6 @@ These files are self explanatory, but I'll explain anyway:
 [profile]_min_freq - this file contains the minimum frequency to be set when this profile is triggered. (eg. 194000)
 [profile]_max_freq - this file contains the maximum frequency to be set when this profile is triggered. (eg. 1512000)
 lowb_level - this file contains a 2 digit number that represents the battery percentage which the Low Battery profile is triggered. (eg. 15)
+
+If any profile file (other than Normal) is blank or missing, it sets that profile to use the same info from Normal.
+If the lowb_level (Low Battery level) file is blank or missing, it assumes 0.. Effectively disabling the low battery profile..
