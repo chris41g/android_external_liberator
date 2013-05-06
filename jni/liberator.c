@@ -150,45 +150,31 @@ char lowbunf[30];
         return -1;
 
     if (get_config_value("soff_min_freq", conf->soff_min_freq) == -1)
-        if (get_config_value("default_min_freq", conf->default_min_freq) == -1)
-        return -1;
+	conf->soff_min_freq = conf->default_min_freq;
     if (get_config_value("soff_max_freq", conf->soff_max_freq) == -1)
-        if (get_config_value("default_max_freq", conf->default_max_freq) == -1)
-        return -1;
+	conf->soff_max_freq = conf->default_max_freq;
     if (get_config_value("soff_governor", conf->soff_governor) == -1)
-        if (get_config_value("default_governor", conf->default_governor) == -1)
-        return -1;
+	conf->soff_governor = conf->default_governor;
     if (get_config_value("soff_scheduler", conf->soff_scheduler) == -1)
-        if (get_config_value("default_scheduler", conf->default_scheduler) == -1)
-        return -1;
-
+	conf->soff_scheduler = conf->default_scheduler;
     if (get_config_value("charge_min_freq", conf->charge_min_freq) == -1)
-        if (get_config_value("default_min_freq", conf->default_min_freq) == -1)
-        return -1;
+	conf->soff_min_freq = conf->default_min_freq;
     if (get_config_value("charge_max_freq", conf->charge_max_freq) == -1)
-        if (get_config_value("default_max_freq", conf->default_max_freq) == -1)
-        return -1;
+	conf->charge_min_freq = conf->default_min_freq;
     if (get_config_value("charge_governor", conf->charge_governor) == -1)
-        if (get_config_value("default_governor", conf->default_governor) == -1)
-        return -1;
+	conf->charge_governor = conf->default_governor;
     if (get_config_value("charge_scheduler", conf->charge_scheduler) == -1)
-        if (get_config_value("default_scheduler", conf->default_scheduler) == -1)
-        return -1;
-
+	conf->charge_scheduler = conf->default_scheduler;
     if (get_config_value("lowb_level", conf->lowb_level) == -1)
 	conf->lowb_level = "25";
     if (get_config_value("lowb_min_freq", conf->lowb_min_freq) == -1)
-        if (get_config_value("default_min_freq", conf->default_min_freq) == -1)
-        return -1;
+	conf->lowb_min_freq = conf->default_min_freq;
     if (get_config_value("lowb_max_freq", conf->lowb_max_freq) == -1)
-	if (get_config_value("default_max_freq", conf->default_max_freq) == -1)
-        return -1;
+	conf->lowb_max_freq = conf->default_max_freq;
     if (get_config_value("lowb_governor", conf->lowb_governor) == -1)
-        if (get_config_value("default_governor", conf->default_governor) == -1)
-        return -1;
+	conf->lowb_governor = conf->default_governor;
     if (get_config_value("lowb_scheduler", conf->lowb_scheduler) == -1)
-        if (get_config_value("default_scheduler", conf->default_scheduler) == -1)
-        return -1;
+	conf->lowb_scheduler = conf->default_scheduler;
     return 0;
 }
 
