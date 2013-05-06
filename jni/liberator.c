@@ -46,26 +46,26 @@
 
 typedef struct s_ocConfig
 {
-    char * default_min_freq;
-    char * default_max_freq;
-    char * default_governor;
-    char * default_scheduler;
+    char default_min_freq[30];
+    char default_max_freq[30];
+    char default_governor[30];
+    char default_scheduler[30];
 
-    char * soff_min_freq;
-    char * soff_max_freq;
-    char * soff_governor;
-    char * soff_scheduler;
+    char soff_min_freq[30];
+    char soff_max_freq[30];
+    char soff_governor[30];
+    char soff_scheduler[30];
 
-    char * charge_min_freq;
-    char * charge_max_freq;
-    char * charge_governor;
-    char * charge_scheduler;
+    char charge_min_freq[30];
+    char charge_max_freq[30];
+    char charge_governor[30];
+    char charge_scheduler[30];
 
-    char * lowb_level;
-    char * lowb_min_freq;
-    char * lowb_max_freq;
-    char * lowb_governor;
-    char * lowb_scheduler;
+    char lowb_level[30];
+    char lowb_min_freq[30];
+    char lowb_max_freq[30];
+    char lowb_governor[30];
+    char lowb_scheduler[30];
 
 } ocConfig;
 
@@ -97,10 +97,17 @@ int read_from_file(char *path, int len, char *result)
     int res = 0;
     fd = fopen(path, "r");
     if (fd == NULL)
+    {
+	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Oopsie!");
         return -1;
+    }
     if (fgets(result, len, fd) == NULL)
+    {
+	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Oopsie 2!");
         res = -1;
+    }
     fclose(fd);
+    __android_log_print(ANDROID_LOG_INFO, APPNAME, "result=%s, len=%i", result, len);
     return res;
 }
 
@@ -130,7 +137,7 @@ int get_config_value(char *config_key, char *reference)
 
     strcpy(config_path, CONFIG_ROOT);
     strcat(config_path, config_key);
-
+    __android_log_print(ANDROID_LOG_INFO, APPNAME, "config_path=%s", config_path);
     return read_from_file(config_path, 30, reference);
 }
 
@@ -140,47 +147,56 @@ char config_path[60];
 char lowbunf[30];
 
     if (conf == NULL)
+    {
 	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Meltdown!");
         return -1;
+    }
     if (get_config_value("default_min_freq", conf->default_min_freq) == -1)
-	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile min_freq");
+    {
+	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile min_freq == %s", conf->default_min_freq);
         return -1;
+    }
     if (get_config_value("default_max_freq", conf->default_max_freq) == -1)
+    {
 	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile max_freq");
         return -1;
+    }
     if (get_config_value("default_governor", conf->default_governor) == -1)
+    {
 	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile governor");
         return -1;
+    }
     if (get_config_value("default_scheduler", conf->default_scheduler) == -1)
+    {
 	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile scheduler");
         return -1;
-
+    }
     if (get_config_value("soff_min_freq", conf->soff_min_freq) == -1)
-	conf->soff_min_freq = conf->default_min_freq;
+	get_config_value("default_min_freq", conf->soff_min_freq);
     if (get_config_value("soff_max_freq", conf->soff_max_freq) == -1)
-	conf->soff_max_freq = conf->default_max_freq;
+	get_config_value("default_max_freq", conf->soff_max_freq);
     if (get_config_value("soff_governor", conf->soff_governor) == -1)
-	conf->soff_governor = conf->default_governor;
+	get_config_value("default_governor", conf->soff_governor);
     if (get_config_value("soff_scheduler", conf->soff_scheduler) == -1)
-	conf->soff_scheduler = conf->default_scheduler;
+	get_config_value("default_scheduler", conf->soff_scheduler);
     if (get_config_value("charge_min_freq", conf->charge_min_freq) == -1)
-	conf->soff_min_freq = conf->default_min_freq;
+	get_config_value("default_min_freq", conf->charge_min_freq);
     if (get_config_value("charge_max_freq", conf->charge_max_freq) == -1)
-	conf->charge_min_freq = conf->default_min_freq;
+	get_config_value("default_max_freq", conf->charge_max_freq);
     if (get_config_value("charge_governor", conf->charge_governor) == -1)
-	conf->charge_governor = conf->default_governor;
+	get_config_value("default_governor", conf->charge_governor);
     if (get_config_value("charge_scheduler", conf->charge_scheduler) == -1)
-	conf->charge_scheduler = conf->default_scheduler;
+	get_config_value("default_scheduler", conf->charge_scheduler);
     if (get_config_value("lowb_level", conf->lowb_level) == -1)
-	conf->lowb_level = "25";
+	strcpy(conf->lowb_level[0],"25");
     if (get_config_value("lowb_min_freq", conf->lowb_min_freq) == -1)
-	conf->lowb_min_freq = conf->default_min_freq;
+	get_config_value("default_min_freq", conf->lowb_min_freq);
     if (get_config_value("lowb_max_freq", conf->lowb_max_freq) == -1)
-	conf->lowb_max_freq = conf->default_max_freq;
+	get_config_value("default_max_freq", conf->lowb_max_freq);
     if (get_config_value("lowb_governor", conf->lowb_governor) == -1)
-	conf->lowb_governor = conf->default_governor;
+	get_config_value("default_governor", conf->lowb_governor);
     if (get_config_value("lowb_scheduler", conf->lowb_scheduler) == -1)
-	conf->lowb_scheduler = conf->default_scheduler;
+	get_config_value("default_scheduler", conf->lowb_scheduler);
     return 0;
 }
 
@@ -224,10 +240,7 @@ int main (int argc, char **argv)
     pid_t pid, sid;
     char awake_buffer[9];
     char charge_buffer[15];
-    char cfgs[45];
-    char  batt_buffer[4];
-    char input_buffer[0];
-    FILE *fp1;
+    char batt_buffer[3];
 
     __android_log_write(ANDROID_LOG_INFO, APPNAME, "Starting 4Ace daemon.");
 
@@ -236,8 +249,6 @@ int main (int argc, char **argv)
         __android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to load configuration. Stopping.");
         return 1;
     }
-
-    input_buffer[0] = 0;
 
     pid = fork();
     if (pid < 0)
@@ -276,8 +287,8 @@ int main (int argc, char **argv)
         if (strncmp(awake_buffer, "on",3) == 0)
         {
 
-        int lowblvl = conf.lowb_level;
-	int battlvl = batt_buffer;
+        int lowblvl = (int)conf.lowb_level;
+	int battlvl = (int)batt_buffer;
 
 		if (strncmp(charge_buffer, "Charging",8) == 0)
 		{
