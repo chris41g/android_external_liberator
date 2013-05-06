@@ -98,16 +98,16 @@ int read_from_file(char *path, int len, char *result)
     fd = fopen(path, "r");
     if (fd == NULL)
     {
-	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Oopsie!");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Oopsie!");
         return -1;
     }
     if (fgets(result, len, fd) == NULL)
     {
-	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Oopsie 2!");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Oopsie 2!");
         res = -1;
     }
     fclose(fd);
-    __android_log_print(ANDROID_LOG_INFO, APPNAME, "result=%s, len=%i", result, len);
+//    __android_log_print(ANDROID_LOG_INFO, APPNAME, "result=%s, len=%i", result, len);
     return res;
 }
 
@@ -137,7 +137,7 @@ int get_config_value(char *config_key, char *reference)
 
     strcpy(config_path, CONFIG_ROOT);
     strcat(config_path, config_key);
-    __android_log_print(ANDROID_LOG_INFO, APPNAME, "config_path=%s", config_path);
+//    __android_log_print(ANDROID_LOG_INFO, APPNAME, "config_path=%s", config_path);
     return read_from_file(config_path, 30, reference);
 }
 
@@ -148,27 +148,27 @@ char lowbunf[30];
 
     if (conf == NULL)
     {
-	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Meltdown!");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Meltdown!");
         return -1;
     }
     if (get_config_value("default_min_freq", conf->default_min_freq) == -1)
     {
-	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile min_freq == %s", conf->default_min_freq);
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile min_freq == %s", conf->default_min_freq);
         return -1;
     }
     if (get_config_value("default_max_freq", conf->default_max_freq) == -1)
     {
-	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile max_freq");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile max_freq");
         return -1;
     }
     if (get_config_value("default_governor", conf->default_governor) == -1)
     {
-	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile governor");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile governor");
         return -1;
     }
     if (get_config_value("default_scheduler", conf->default_scheduler) == -1)
     {
-	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile scheduler");
+//	__android_log_print(ANDROID_LOG_ERROR, APPNAME, "Cant get default profile scheduler");
         return -1;
     }
     if (get_config_value("soff_min_freq", conf->soff_min_freq) == -1)
@@ -188,7 +188,7 @@ char lowbunf[30];
     if (get_config_value("charge_scheduler", conf->charge_scheduler) == -1)
 	get_config_value("default_scheduler", conf->charge_scheduler);
     if (get_config_value("lowb_level", conf->lowb_level) == -1)
-	strcpy(conf->lowb_level[0],"25");
+        __android_log_print(ANDROID_LOG_ERROR, APPNAME, "No battery level file");
     if (get_config_value("lowb_min_freq", conf->lowb_min_freq) == -1)
 	get_config_value("default_min_freq", conf->lowb_min_freq);
     if (get_config_value("lowb_max_freq", conf->lowb_max_freq) == -1)
@@ -283,7 +283,7 @@ int main (int argc, char **argv)
         	__android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.");
         	return 1;
         }
-	__android_log_print(ANDROID_LOG_INFO, APPNAME, "awake_buffer==%s charge_buffer=%s  batt_buffer=%s", awake_buffer, charge_buffer, batt_buffer);
+//	__android_log_print(ANDROID_LOG_INFO, APPNAME, "awake_buffer==%s charge_buffer=%s  batt_buffer=%s", awake_buffer, charge_buffer, batt_buffer);
         if (strncmp(awake_buffer, "on",3) == 0)
         {
 
