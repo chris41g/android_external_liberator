@@ -1,0 +1,24 @@
+Liberator
+
+Liberator is an OC/UC daemon similar to, and based on virtuous.
+It's a native app, which runs via an init.d script on startup.
+It has 4 profiles, which can be set up to change the governor, scheduler, and min/max freqs.
+Profiles:
+Normal - The default profile.
+Sleep - Kicks in when the screen turns off.
+Charging - Kicks in when the screen is on, and the phone is charging.
+Low Battery - Kicks in while the screen is on, not charging, and the battery percentage falls below the defined level.
+
+It is setup using text files in /system/etc/liberator.
+Each profile has some settings files.
+Normal - default_governor, default_scheduler, default_min_freq, default_max_freq
+Sleep - soff_governor, soff_scheduler, soff_min_freq, soff_max_freq
+Charging - charge_governor, charge_scheduler, charge_min_freq, charge_max_freq
+Low Battery - lowb_governor, lowb_scheduler, lowb_min_freq, lowb_max_freq, lowb_level
+
+These files are self explanatory, but I'll explain anyway:
+[profile]_governor - this file contains the name of the governor to be set when this profile is triggered. (eg. Ondemand)
+[profile]_scheduler - this file contains the name of the scheduler to be set when this profile is triggered. (eg. NOOP)
+[profile]_min_freq - this file contains the minimum frequency to be set when this profile is triggered. (eg. 194000)
+[profile]_max_freq - this file contains the maximum frequency to be set when this profile is triggered. (eg. 1512000)
+lowb_level - this file contains a 2 digit number that represents the battery percentage which the Low Battery profile is triggered. (eg. 15)
