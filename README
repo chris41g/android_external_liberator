@@ -26,3 +26,12 @@ lowb_level - this file contains a 2 digit number that represents the battery per
 
 If any profile file (other than Normal) is blank or missing, it sets that profile to use the same info from Normal.
 If the lowb_level (Low Battery level) file is blank or missing, it assumes 0.. Effectively disabling the low battery profile..
+
+to find out available governors for your kernel:
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+to find out available frequencies for your kernel:
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+to find out available schedulers for your kernel:
+cat /sys/class/block/mmcblk0/queue/scheduler
+
+Must be in a root adb shell or terminal session...
