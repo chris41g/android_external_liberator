@@ -2,6 +2,7 @@ Liberator
 
 Liberator is an OC/UC daemon similar to, and based on virtuous.
 It's a native app, which runs via an init.d script on startup.
+I suggest uninstalling any other apps that have the same function.
 It has 4 profiles, which can be set up to change the governor, scheduler, and min/max freqs.
 Profiles:
 Normal - The default profile.
