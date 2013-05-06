@@ -46,26 +46,26 @@
 
 typedef struct s_ocConfig
 {
-    char default_min_freq[30];
-    char default_max_freq[30];
-    char default_governor[30];
-    char default_scheduler[30];
+    char * default_min_freq;
+    char * default_max_freq;
+    char * default_governor;
+    char * default_scheduler;
 
-    char soff_min_freq[30];
-    char soff_max_freq[30];
-    char soff_governor[30];
-    char soff_scheduler[30];
+    char * soff_min_freq;
+    char * soff_max_freq;
+    char * soff_governor;
+    char * soff_scheduler;
 
-    char charge_min_freq[30];
-    char charge_max_freq[30];
-    char charge_governor[30];
-    char charge_scheduler[30];
+    char * charge_min_freq;
+    char * charge_max_freq;
+    char * charge_governor;
+    char * charge_scheduler;
 
     char * lowb_level;
-    char lowb_min_freq[30];
-    char lowb_max_freq[30];
-    char lowb_governor[30];
-    char lowb_scheduler[30];
+    char * lowb_min_freq;
+    char * lowb_max_freq;
+    char * lowb_governor;
+    char * lowb_scheduler;
 
 } ocConfig;
 
