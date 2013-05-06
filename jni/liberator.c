@@ -239,8 +239,13 @@ int main (int argc, char **argv)
 
     __android_log_write(ANDROID_LOG_INFO, APPNAME, "Starting 4Ace daemon.");
 
+    if (load_config(&conf) == -1)
+    {
+        __android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to load configuration. Stopping.");
+        return 1;
+    }
+
     input_buffer[0] = 0;
-    charge_buffer[0] = 0;
 
     pid = fork();
     if (pid < 0)
