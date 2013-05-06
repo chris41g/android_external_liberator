@@ -41,6 +41,7 @@
 #define SYS_WAKE "/sys/power/wait_for_fb_status"
 #define SYS_CHARGE "/sys/class/power_supply/battery/status"
 #define SYS_BATT "/sys/class/power_supply/battery/capacity"
+#define SYS_PROF "/data/local/tmp/profile"
 
 #define APPNAME "Liberator"
 
@@ -144,7 +145,6 @@ int get_config_value(char *config_key, char *reference)
 int  load_config(ocConfig *conf)
 {
 char config_path[60];
-char lowbunf[30];
 
     if (conf == NULL)
     {
@@ -238,10 +238,10 @@ int main (int argc, char **argv)
 {
     ocConfig  conf;
     pid_t pid, sid;
-    char awake_buffer[9];
-    char charge_buffer[15];
-    char batt_buffer[3];
-    char * curr_prof = '\0';
+    char awake_buffer[4];
+    char charge_buffer[12];
+    char batt_buffer[4];
+    char curr_prof[9];
 
     __android_log_write(ANDROID_LOG_INFO, APPNAME, "Starting 4Ace daemon.");
 
@@ -266,43 +266,52 @@ int main (int argc, char **argv)
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
-
+//    write_to_file(SYS_PROF, "Normal");
     while (1)
     {
-        if (read_from_file(SYS_WAKE, 6, awake_buffer) == -1)
+        if (read_from_file(SYS_WAKE, 4, awake_buffer) == -1)
         {
-        	__android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.");
+        	__android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.1");
         	return 1;
         }
-	if (read_from_file(SYS_CHARGE, 15, charge_buffer) == -1)
+	if (read_from_file(SYS_CHARGE, 12, charge_buffer) == -1)
 	{
-		 __android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.");
+		 __android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.2");
 		return 1;
 	}
-	if (read_from_file(SYS_BATT, 30, batt_buffer) == -1)
+	if (read_from_file(SYS_BATT, 4, batt_buffer) == -1)
         {
-        	__android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.");
+        	__android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.3");
         	return 1;
         }
-//	__android_log_print(ANDROID_LOG_INFO, APPNAME, "awake_buffer==%s charge_buffer=%s  batt_buffer=%s", awake_buffer, charge_buffer, batt_buffer);
-        if (strncmp(awake_buffer, "on",3) == 0)
+	if (read_from_file(SYS_PROF, 9, curr_prof) == -1)
+        {
+        	__android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.4");
+        	return 1;
+        }
+
+//	__android_log_print(ANDROID_LOG_INFO, APPNAME, "awake_buffer=%s charge_buffer=%s  batt_buffer=%s", awake_buffer, charge_buffer, batt_buffer);
+        if (strcmp(awake_buffer, "on") == 0)
         {
 
         int lowblvl = (int)conf.lowb_level;
 	int battlvl = (int)batt_buffer;
-		if (strncmp(charge_buffer, "Charging",8) == 0 && strncmp(curr_prof, "Charging",3) > 0)
+		if (strncmp(charge_buffer, "Charging",8) == 0)
 		{
-			__android_log_write(ANDROID_LOG_INFO, APPNAME, "Setting Charging profile.");
+			if (strncmp(curr_prof, "Charging",8) != 0)
+			{
+				__android_log_write(ANDROID_LOG_INFO, APPNAME, "Setting Charging profile.");
 
-			if (0 !=set_cpu1_online(1))
-				__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Charging profile for cpu1.");
+				if (0 !=set_cpu1_online(1))
+					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Charging profile for cpu1.");
 
-			set_cpu_params(conf.charge_governor, conf.charge_scheduler, conf.charge_min_freq, conf.charge_max_freq);
-			strncpy(curr_prof,"Charging",3);
+				set_cpu_params(conf.charge_governor, conf.charge_scheduler, conf.charge_min_freq, conf.charge_max_freq);
+				write_to_file(SYS_PROF, "Charging");
+			}
 		}
 		else 
 		{
-			if (battlvl < lowblvl && strncmp(curr_prof, "LowBatt",3) > 0)
+			if (battlvl < lowblvl && strncmp(curr_prof, "LowBatt",7) != 0)
 			{
 				__android_log_write(ANDROID_LOG_INFO, APPNAME, "Setting Low Battery profile.");
 
@@ -310,11 +319,11 @@ int main (int argc, char **argv)
 					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Low Battery profile for cpu1.");
 
 				set_cpu_params(conf.lowb_governor, conf.lowb_scheduler, conf.lowb_min_freq, conf.lowb_max_freq);
-				strncpy(curr_prof,"LowBatt",3);
+				write_to_file(SYS_PROF, "LowBatt");
 			}
 			else
 			{
-				if  (strncmp(curr_prof, "Normal",3) > 0)
+				if  (strncmp(curr_prof, "Normal",6) != 0)
 				{		
 					__android_log_write(ANDROID_LOG_INFO, APPNAME, "Setting Normal profile.");
 
@@ -322,7 +331,7 @@ int main (int argc, char **argv)
 						__android_log_write(ANDROID_LOG_INFO, APPNAME, "Failed setting Normal profile for cpu1.");
 
 					set_cpu_params(conf.default_governor, conf.default_scheduler, conf.default_min_freq, conf.default_max_freq);
-					strncpy(curr_prof,"Normal",3);
+					write_to_file(SYS_PROF, "Normal");
 				}
 			}
 
@@ -330,20 +339,20 @@ int main (int argc, char **argv)
         }
 	else
 	{	
-		if  (strncmp(curr_prof, "Sleep",3) > 0)
+		if  (strncmp(curr_prof, "Sleep",5) != 0)
 		{
 			__android_log_write(ANDROID_LOG_INFO, APPNAME, "Setting sleep profile.");
 
 			set_cpu1_online(0);
 	        	set_cpu_params(conf.soff_governor, conf.soff_scheduler, conf.soff_min_freq, conf.soff_max_freq);
-			strncpy(curr_prof,"Sleep", 3);		
+			write_to_file(SYS_PROF, "Sleep");		
 		}
 	}
 	
 	awake_buffer[0] = '\0';
 	charge_buffer[0] = '\0';
 	batt_buffer[0] = '\0';
-
+	curr_prof[0] = '\0';
     }
 
     return 0;
