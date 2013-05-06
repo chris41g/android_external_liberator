@@ -48,7 +48,7 @@
 #define SYS_CMAX_C3 "/sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq"
 #define SYS_CMIN_C3 "/sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq"
 
-#define SYS_WAKE "/sys/power/wait_for_fb_status"
+#define SYS_WAKE "/sys/power/wait_for_fb_wake"
 #define SYS_CHARGE "/sys/class/power_supply/battery/status"
 #define SYS_BATT "/sys/class/power_supply/battery/capacity"
 
@@ -331,7 +331,7 @@ int main (int argc, char **argv)
 {
     ocConfig  conf;
     pid_t pid, sid;
-    char awake_buffer[4];
+    char awake_buffer[6];
     char charge_buffer[12];
     char batt_buffer[4];
     char const * curr_prof = "Normal"; 
@@ -378,7 +378,7 @@ int main (int argc, char **argv)
 
     while (1)
     {
-        if (read_from_file(SYS_WAKE, 4, awake_buffer) == -1)
+        if (read_from_file(SYS_WAKE, 6, awake_buffer) == -1)
         {
         	__android_log_write(ANDROID_LOG_ERROR, APPNAME, "Unable to get data from file. Cannot continue.1");
         	return 1;
@@ -394,7 +394,7 @@ int main (int argc, char **argv)
         	return 1;
         }
 
-        if (strcmp(awake_buffer, "on") == 0)
+        if (strcmp(awake_buffer, "awake") == 0)
         {
 
         int lowblvl = atoi(conf.lowb_level);
